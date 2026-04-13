@@ -16,6 +16,12 @@ var (
 	wrongTyped = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF0000"))
 	waiting = lipgloss.NewStyle().Foreground(lipgloss.Color("#666666"))
 	cursor = lipgloss.NewStyle().Underline(true)
+
+	// box around the text
+	boxStyle = lipgloss.NewStyle().
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#666666")).
+			Padding(0, 1)
 )
 
 /* Model struct
@@ -26,6 +32,8 @@ add a accuracy calculator in the future as well
 type Model struct {
 	typed string
 	target string
+	width int
+	height int
 }
 
 // Initialiazes Model
@@ -38,8 +46,10 @@ func (m Model) Init() tea.Cmd {
 // default just takes user input and puts it in message.String
 func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 	switch message := message.(type) {
+	case tea.WindowSizeMsg:
+		m.width = message.Width
+		m.height = message.Height
 	case tea.KeyMsg:
-
 		switch message.String() {
 		case "ctrl+c", "esc":
 			return m, tea.Quit
@@ -83,12 +93,21 @@ func (m Model) View() string {
 			STRING_BUILDER.WriteString(waiting.Render(char))
 		}
 	}
+
+	// box text wrapper
+	box := boxStyle.Width(m.width - 4).Render(STRING_BUILDER.String())
+
+	// center the box
+	pad := max(m.height/2 - 3, 0)
+	verticalPad := strings.Repeat("\n", pad)
 	
 
 	return fmt.Sprintf(
-        "%s\n\nPress ESC to quit",
-        STRING_BUILDER.String(),
-    )
+		"%s%s\n\n%s",
+		verticalPad,
+		box,
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#444444")).Render("ESC to quit"),
+	)
 }
 
 
@@ -98,11 +117,9 @@ func main() {
 		target: "the quick brown fox jumps over the lazy dog",
 	}
 
-	p := tea.NewProgram(m)
+	p := tea.NewProgram(m, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Print(err)
 		os.Exit(1)
 	}
 }
-
-
