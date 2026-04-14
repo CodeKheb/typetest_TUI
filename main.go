@@ -167,11 +167,10 @@ func (m Model) View() string {
 	)
 }
 
-
 // Main
 func main() {
 	m := Model{
-		target: "the quick brown fox jumps over the lazy dog",
+		target: randomizedWords(),
 	}
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
