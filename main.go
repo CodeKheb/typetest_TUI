@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	// use tea bubbletea and lipgloss for UI
 	tea "github.com/charmbracelet/bubbletea"
@@ -22,6 +23,18 @@ var (
 			Border(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("#666666")).
 			Padding(0, 1)
+
+	wpmStyle = lipgloss.NewStyle().
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#666666")).
+			Padding(0, 1)
+	
+	finishedWPM = lipgloss.NewStyle().
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#666666")).
+			Padding(0, 1)
+	
+	dimmedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#444444"))
 )
 
 /* Model struct
@@ -34,6 +47,10 @@ type Model struct {
 	target string
 	width int
 	height int
+	timeStart time.Time
+	started bool
+	finished bool
+	WPM float64
 }
 
 // Initialiazes Model
@@ -58,10 +75,37 @@ func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 				m.typed = m.typed[:len(m.typed)-1]
 			}
 		default: 
+		// Checks start
+			if !m.started {
+				m.started = true
+				m.timeStart = time.Now()
+			}
 			m.typed += message.String()
+
+		// Checks finish
+			if m.typed == m.target {
+				elapsed := time.Since(m.timeStart).Minutes()
+				words := float64(len(strings.Fields(m.target)))
+				m.WPM = words / elapsed
+				m.finished = true
+			}
 		}
 	}
 	return m, nil
+}
+
+func (m Model) currentWPM() float64 {
+	if !m.started {
+		return 0
+	}
+
+	elapsed := time.Since(m.timeStart).Minutes()
+	if elapsed <= 0 {
+		return 0
+	}	
+	
+	// counts "words" per 5 characters divided by elapsed time to calculate the WPM
+	return float64(len(m.typed)) / 5.0 / elapsed	
 }
 
 
@@ -97,16 +141,29 @@ func (m Model) View() string {
 	// box text wrapper
 	box := boxStyle.Width(m.width - 4).Render(STRING_BUILDER.String())
 
+	// display WPM
+	var displayWPM string
+	if m.finished {
+		displayWPM = finishedWPM.Render(fmt.Sprintf("FINAL WPM: %.0f", m.WPM))
+	} else if m.started {
+		displayWPM = wpmStyle.Render(fmt.Sprintf("CURRENT WPM: %.0f", m.currentWPM()))
+	} else {
+		displayWPM = dimmedStyle.Render("start typing... ")
+	}
+
 	// center the box
 	pad := max(m.height/2 - 3, 0)
 	verticalPad := strings.Repeat("\n", pad)
-	
+
+	// just the hint 
+	hint := dimmedStyle.Render("ESC TO QUIT")
 
 	return fmt.Sprintf(
-		"%s%s\n\n%s",
+		"%s%s\n\n%s\n%s",
 		verticalPad,
 		box,
-		lipgloss.NewStyle().Foreground(lipgloss.Color("#444444")).Render("ESC to quit"),
+		displayWPM,
+		hint,
 	)
 }
 
