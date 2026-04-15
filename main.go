@@ -163,7 +163,11 @@ func (m Model) View() string {
 			if string(m.typed[i]) == char {
 				STRING_BUILDER.WriteString(correctTyped.Render(char))
 			} else {
-				STRING_BUILDER.WriteString(wrongTyped.Render(char))
+				if char == " " {
+					STRING_BUILDER.WriteString(wrongTyped.Render(string(m.typed[i])))
+				} else {
+					STRING_BUILDER.WriteString(wrongTyped.Render(char))
+				}
 			}
 		} else if i == len(m.typed) {
 			STRING_BUILDER.WriteString(cursor.Render(char))
