@@ -251,7 +251,6 @@ func randomizedWords() string {
 		"left",
 		"late",
 		"run",
-		"don't",
 		"while",
 		"press",
 		"close",
@@ -801,7 +800,6 @@ func randomizedWords() string {
 		"agree",
 		"thus",
 		"capital",
-		"won't",
 		"chair",
 		"danger",
 		"fruit",
@@ -1017,3 +1015,14 @@ func randomizedWords() string {
 	})
 	return strings.Join(words[:wordAmount], " ")
 }
+
+
+func(m Model) reset() Model {
+	m.typed = ""
+    m.target = randomizedWords()
+    m.started = false
+    m.finished = false
+    m.WPM = 0
+    return m
+}
+

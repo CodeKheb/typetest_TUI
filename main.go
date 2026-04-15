@@ -80,11 +80,34 @@ func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		// resets
 		case "tab", "enter":
-			m.typed = ""
-			m.target = randomizedWords()
-			m.started = false
-			m.finished = false
-			m.WPM = 0
+			return m.reset(), nil
+		case "1":
+			wordAmount = 10
+			return m.reset(), nil
+		case "2":
+			wordAmount = 20
+			return m.reset(), nil
+		case "3":
+			wordAmount = 30
+			return m.reset(), nil
+		case "4":
+			wordAmount = 40
+			return m.reset(), nil
+		case "5":
+			wordAmount = 50
+			return m.reset(), nil
+		case "6":
+			wordAmount = 60
+			return m.reset(), nil
+		case "7":
+			wordAmount = 70
+			return m.reset(), nil
+		case "8":
+			wordAmount = 80
+			return m.reset(), nil
+		case "9":
+			wordAmount = 90
+			return m.reset(), nil
 		default: 
 			// Checks start
 			if !m.started {
@@ -167,7 +190,7 @@ func (m Model) View() string {
 	verticalPad := strings.Repeat("\n", pad)
 
 	// just the hint 
-	hint := dimmedStyle.Render("Esc QUIT | Tab or Enter RESET")
+	hint := dimmedStyle.Render("Esc QUIT | Tab or Enter RESET\n1: 10 words\n2: 20 words\n3: 30 words\n4: 40 words\n5: 50 words\n6: 60 words\n7: 70 words\n8: 80 words\n9: 90 words")
 
 	return fmt.Sprintf(
 		"%s%s\n\n%s\n%s",
