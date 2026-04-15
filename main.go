@@ -34,7 +34,10 @@ var (
 			BorderForeground(lipgloss.Color("#666666")).
 			Padding(0, 1)
 	
-	dimmedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#444444"))
+	dimmedStyle = lipgloss.NewStyle().
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#444444")).
+			Padding(0, 1)
 )
 
 /* Model struct
@@ -52,6 +55,7 @@ type Model struct {
 	finished bool
 	WPM float64
 }
+
 
 // Initialiazes Model
 func (m Model) Init() tea.Cmd {
@@ -74,15 +78,22 @@ func (m Model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 			if len(m.typed) > 0 {
 				m.typed = m.typed[:len(m.typed)-1]
 			}
+		// resets
+		case "tab", "enter":
+			m.typed = ""
+			m.target = randomizedWords()
+			m.started = false
+			m.finished = false
+			m.WPM = 0
 		default: 
-		// Checks start
+			// Checks start
 			if !m.started {
 				m.started = true
 				m.timeStart = time.Now()
 			}
 			m.typed += message.String()
 
-		// Checks finish
+			// Checks finish
 			if m.typed == m.target {
 				elapsed := time.Since(m.timeStart).Minutes()
 				words := float64(len(strings.Fields(m.target)))
@@ -156,7 +167,7 @@ func (m Model) View() string {
 	verticalPad := strings.Repeat("\n", pad)
 
 	// just the hint 
-	hint := dimmedStyle.Render("ESC TO QUIT")
+	hint := dimmedStyle.Render("Esc QUIT | Tab or Enter RESET")
 
 	return fmt.Sprintf(
 		"%s%s\n\n%s\n%s",

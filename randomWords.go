@@ -5,6 +5,8 @@ import (
 	"strings"
 )
 
+var wordAmount int = 10
+
 // top 1000 words in ENGLISH level
 // source: https://gist.github.com/deekayen/4148741#file-1-1000-txt
 func randomizedWords() string {
@@ -1013,5 +1015,5 @@ func randomizedWords() string {
 	rand.Shuffle(len(words), func(i, j int) {
 		words[i], words[j] = words[j], words[i]
 	})
-	return strings.Join(words[:8], " ")
+	return strings.Join(words[:wordAmount], " ")
 }
