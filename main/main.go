@@ -32,6 +32,7 @@ type Model struct {
 	WPM float64
 
 	screen Screen
+	leaderboard []LeaderboardEntry
 }
 
 
@@ -88,8 +89,11 @@ func (m Model) View() string {
 
 // Main
 func main() {
+	leaderboard, _ := loadLeaderboard()
+
 	m := Model{
 		target: randomizedWords(),
+		leaderboard: leaderboard,
 	}
 
 	p := tea.NewProgram(m, tea.WithAltScreen())

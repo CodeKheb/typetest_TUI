@@ -1,6 +1,10 @@
 package main
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"fmt"
+
+	"github.com/charmbracelet/lipgloss"
+)
 
 var (
 	correctTyped = lipgloss.NewStyle().Foreground(lipgloss.Color("#00FF00"))
@@ -37,7 +41,17 @@ var (
 )
 
 var hintText string = "Esc: QUIT | Enter: RESET | Tab: MENU"
-var menuText string = "MENU\n" + 
-"Typing Test Written in Go" + 
-"\n1: 10 words\n2: 20 words\n3: 30 words\n4: 40 words\n5: 50 words\n6: 60 words\n7: 70 words\n8: 80 words\n9: 90 words"
+func (m Model) menuText() string {
+	best := bestScore(m.leaderboard)
+	return fmt.Sprintf(
+		"MENU\n"+
+		"Typing Test Written in Go\n\n"+
+		"Best WPM: %.1f\n"+
+		"Last Run: %.1f WPM\n\n"+
+		"1 - 9: Change Word Count\n"+
+		"Tab: Type\n"+
+		"Esc: Quit",
+		best, m.WPM,
+	)
+}
 

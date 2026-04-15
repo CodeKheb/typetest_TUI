@@ -6,6 +6,7 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 )
 
 func (m Model) typingView() string {
@@ -101,6 +102,10 @@ func (m Model) updateTyping(message tea.KeyMsg) (tea.Model, tea.Cmd) {
 			words := float64(len(strings.Fields(m.target)))
 			m.WPM = words / elapsed
 			m.finished = true
+
+			// save to json file 
+			_ = saveScore(m.WPM) 
+			m.leaderboard, _ = loadLeaderboard() 
 		}
 	}
 
@@ -108,14 +113,13 @@ func (m Model) updateTyping(message tea.KeyMsg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) menuView() string {
-	menu := menuStyle.Width(m.width - 4).Height(m.height - 4).Render(menuText)
-
-	pad := max(m.height/2 - 3, 0)
-	verticalPad := strings.Repeat("\n", pad)
-
-	return fmt.Sprintf("%s%s", verticalPad, menu)
+	menu := menuStyle.
+		Width(m.width - 4).
+		Height(m.height - 4).
+		Align(lipgloss.Center, lipgloss.Center).
+		Render(m.menuText())
+	return menu
 }
-
 
 func (m Model) updateMenu(message tea.KeyMsg) (tea.Model, tea.Cmd) {
 	switch message.String() {
