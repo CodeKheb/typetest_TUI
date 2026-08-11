@@ -3,12 +3,26 @@ package main
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"sort"
 	"time"
 )
 
-// leaderboard.json creates automatically on local machine
-const leaderboardFile = "leaderboard.json"
+// constant app name used to build the fixed leaderboard path
+const leaderboardDir = "typetest"
+ 
+// constant file path: <user config dir>/typetest/leaderboard.json
+func leaderboardPath() (string, error) {
+    configDir, err := os.UserConfigDir()
+    if err != nil {
+        return "", err
+    }
+    dir := filepath.Join(configDir, leaderboardDir)
+    if err := os.MkdirAll(dir, 0o755); err != nil {
+        return "", err
+    }
+    return filepath.Join(dir, "leaderboard.json"), nil
+}
 
 // []LeaderboardEntry struct
 type LeaderboardEntry struct {
@@ -18,8 +32,12 @@ type LeaderboardEntry struct {
 
 // load leaderboard, initialized in func main()
 func loadLeaderboard() ([]LeaderboardEntry, error) {
+	path, err := leaderboardPath()
+	if err != nil {
+		return nil, err
+	}
 	// read the file
-	data, err := os.ReadFile(leaderboardFile)
+	data, err := os.ReadFile(path)
 
 	// if does not exist return nil
 	if err != nil {
@@ -60,7 +78,11 @@ func saveScore(wpm float64) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(leaderboardFile, data, 0644)
+	path, err := leaderboardPath()
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, data, 0644)
 }
 
 // return the best WPM 
