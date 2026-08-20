@@ -50,6 +50,7 @@ typetest
 ### In the menu
 
 Press `1` through `9` to set the word count (10–90 words).
+Press `C` to switch between capitalizations
 
 ---
 
