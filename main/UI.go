@@ -49,6 +49,7 @@ func (m Model) menuText() string {
 		"Best WPM: %.1f\n"+
 		"Last Run: %.1f WPM\n\n"+
 		"1 - 9: Change Word Count\n"+
+		"  C  : Capitalize\n"+
 		"Tab: Type\n"+
 		"Esc: Quit",
 		best, m.WPM,

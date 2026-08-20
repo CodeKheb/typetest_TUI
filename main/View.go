@@ -153,6 +153,13 @@ func (m Model) updateMenu(message tea.KeyMsg) (tea.Model, tea.Cmd) {
 	case "9":
 		wordAmount = 90
 		return m.reset(), nil
+	case "c":
+		if (lowerCase == true) {
+			lowerCase = false
+		} else {
+			lowerCase = true 
+		}
+		return m.reset(),nil
 	case "ctrl+c", "esc":
 		return m, tea.Quit
 	}

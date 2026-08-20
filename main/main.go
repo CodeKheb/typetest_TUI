@@ -16,11 +16,7 @@ const (
 	TypingScreen Screen = iota
 	MenuScreen
 )
-/* Model struct
-TO DO: Make Target Random, add UI live for target
-make timer and show wrong types
-add a accuracy calculator in the future as well
-*/
+// Model struct
 type Model struct {
 	typed string
 	target string
